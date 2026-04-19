@@ -1,10 +1,21 @@
-FROM node:20-alpine
+FROM node:20-slim
+
 WORKDIR /app
+
+# Install build dependencies
 COPY package*.json ./
-RUN npm ci
-COPY src/ ./src/
-COPY tsconfig.json ./
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Build TypeScript code to Javascript
 RUN npm run build
-RUN npm prune --omit=dev
-EXPOSE 3000
-CMD ["node", "dist/index.js", "--http"]
+
+# Hugging Face Requirements
+ENV PORT=7860
+EXPOSE 7860
+
+# Start the server using the compiled code
+CMD ["node", "dist/index.js"]
+
